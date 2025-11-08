@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대충가이드 - 키워드 추천</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <span>앱 다운로드</span>
+        <span>우편함</span>
+    </header>
+
+    <main class="container">
+        
+        <h3 class="keyword-title">누구와? '대충'</h3>
+        <div class="keyword-grid three-cols">
+            <button class="keyword-btn">👨‍👩‍👧‍👦 가족</button>
+            <button class="keyword-btn">💑 연인</button>
+            <button class="keyword-btn">🧑‍🤝‍🧑 친구</button>
+        </div>
+
+        <h3 class="keyword-title">뭘? '대충'</h3>
+        <div class="keyword-grid three-cols">
+            <button class="keyword-btn">🍜 맛집</button>
+            <button class="keyword-btn">🍰 디저트</button>
+            <button class="keyword-btn">🏛️ 관광</button>
+        </div>
+
+        <h3 class="keyword-title">성향? '대충'</h3>
+        <div class="keyword-grid four-cols"> <button class="keyword-btn">🔥 에너지 뿜뿜!</button>
+            <button class="keyword-btn">😴 힘들어, 쉬고싶어...</button>
+            <button class="keyword-btn">🌳 자연이 좋아!</button>
+            <button class="keyword-btn">🏙️ 모던하게 가자</button>
+        </div>
+
+
+        <h3 class="keyword-title result-title">'친구' + '맛집' + '구경거리!' 추천</h3>
+        <ul class="spot-list">
+           <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 1 (데이트 장소) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 서구 둔산동</p>
+                    <p>☕ 분위기: 조용하고 로맨틱한 조명, 커플석 위주</p>
+                    <p>💡 특징: 야외 테라스와 야경이 아름다워 데이트 명소로 인기</p>
+                </div>
+            </li>
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 2 (대충 맛있는 음식이 있는 곳) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 유성구 궁동</p>
+                    <p>☕ 분위기: 활기찬 거리의 푸드존, 캐주얼한 식당들 밀집</p>
+                    <p>💡 특징: 현지인 추천 맛집이 많고 야식 시간대에도 붐빔</p>
+                </div>
+            </li>
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 3 (구경할 거리가 많은 곳) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 중구 대흥동</p>
+                    <p>☕ 분위기: 예술 거리 특유의 자유로운 분위기, 벽화와 거리 공연</p>
+                    <p>💡 특징: 주말마다 플리마켓과 전시가 열리는 문화 명소</p>
+                </div>
+            </li>
+        </ul>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span>🏠</span>
+            <p>홈</p>
+        </a>
+        <a href="map.html" class="nav-item">
+            <span>📍</span>
+            <p>지금 여기 대전</p>
+        </a>
+        <a href="keyword.html" class="nav-item active">
+            <span>🔑</span>
+            <p>키워드 추천</p>
+        </a>
+        <a href="scanner.html" class="nav-item">
+            <span>📷</span>
+            <p>QR 찍기</p>
+        </a>
+    </nav>
+
+
+    <script>
+        // 아코디언 스타일 인터페이스
+        document.querySelectorAll('.spot-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.place-content');
+                const arrow = item.querySelector('.arrow');
+
+                const isOpen = content.classList.contains('open');
+
+                if (isOpen) {
+                    // 닫기
+                    content.classList.remove('open');
+                    content.style.maxHeight = null;
+                    arrow.classList.remove('open');
+                } else {
+                    // 열기
+                    content.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.classList.add('open');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

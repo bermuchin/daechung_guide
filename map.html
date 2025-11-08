@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대충가이드 - 지금 여기</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=30fda078e1efe2602bdfd3f495cbdf0e"></script>
+</head>
+<body>
+
+    <header class="app-header">
+        <span>앱 다운로드</span>
+        <span>우편함</span>
+    </header>
+
+    <main class="container">
+        
+        <div id="map" style="width: 100%; height: 300px; border-radius: 10px; border: 3px solid #FF6600;"></div>
+
+        <ul class="spot-list">
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 1 (대충 힙한 카페) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 중구 은행동</p>
+                    <p>☕ 분위기: 감성적인 인테리어, 수제 디저트</p>
+                    <p>💡 특징: 지역 예술가 전시와 협업 이벤트가 자주 열림</p>
+                </div>
+            </li>
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 2 (대충 신기한 소품샵) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 서구 둔산동</p>
+                    <p>🛍️ 특징: 로컬 브랜드 굿즈, 향초, 엽서 등 감성 소품 판매</p>
+                    <p>🎁 이벤트: 직접 포장 워크숍 진행</p>
+                </div>
+            </li>
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 3 (대충 멍때리는 공원) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 유성구</p>
+                    <p>🌳 특징: 잔디밭과 호수가 있는 조용한 공간</p>
+                    <p>🎶 팁: 주말 버스킹과 야시장 열림</p>
+                </div>
+            </li>
+        </ul>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span>🏠</span>
+            <p>홈</p>
+        </a>
+        <a href="map.html" class="nav-item active">
+            <span>📍</span>
+            <p>지금 여기 대전</p>
+        </a>
+        <a href="keyword.html" class="nav-item">
+            <span>🔑</span>
+            <p>키워드 추천</p>
+        </a>
+        <a href="scanner.html" class="nav-item">
+            <span>📷</span>
+            <p>QR 찍기</p>
+        </a>
+    </nav>
+
+    <script>
+        // 1. 지도를 담을 div (id='map')
+        const mapContainer = document.getElementById('map'); 
+        
+        // 2. 지도 중심 좌표 (대전역 기준)
+        const centerPosition = new kakao.maps.LatLng(36.3323, 127.4342); 
+
+        // 3. 지도 옵션 설정
+        const mapOption = { 
+            center: centerPosition, // 중심 좌표
+            level: 4 // 확대 레벨
+        };
+
+        // 4. 지도 생성
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 5. '병맛' 마커(A,B,C) 데이터
+        const markersData = [
+            { lat: 36.3330, lng: 127.4340, label: 'A' }, // 장소 1
+            { lat: 36.3320, lng: 127.4355, label: 'B' }, // 장소 2
+            { lat: 36.3315, lng: 127.4330, label: 'C' }  // 장소 3
+        ];
+
+        // 6. 마커(A,B,C) 생성하기 (스케치와 똑같이!)
+        markersData.forEach(data => {
+            // '병맛' 스타일을 입힌 div 태그 (style.css의 .marker 스타일 활용)
+            const content = `<div class="marker">${data.label}</div>`;
+
+            // 커스텀 오버레이 생성 (마커 대신 사용)
+            new kakao.maps.CustomOverlay({
+                position: new kakao.maps.LatLng(data.lat, data.lng),
+                content: content,
+                map: map
+            });
+        });
+
+        // 아코디언 스타일 인터페이스
+        document.querySelectorAll('.spot-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.place-content');
+                const arrow = item.querySelector('.arrow');
+
+                const isOpen = content.classList.contains('open');
+
+                if (isOpen) {
+                    // 닫기
+                    content.classList.remove('open');
+                    content.style.maxHeight = null;
+                    arrow.classList.remove('open');
+                } else {
+                    // 열기
+                    content.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.classList.add('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
