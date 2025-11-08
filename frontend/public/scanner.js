@@ -1,14 +1,17 @@
-// frontend/public/scanner.js (신규 파일 - '진짜' 로직)
+// frontend/public/scanner.js ('병맛' 아바타 로직 적용)
 
 // 🔐 '보안 QR' 검증을 위한 '공개 키' (Public Key)
-// (해커톤 시연용. 이 키는 앱에 저장되고, 짝이 되는 '비공개 키'는 backend/에 보관합니다)
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoErmN8yL/S/yFVLh9rAX/1IN+9/A/n
 M6lYrhQ8N4m6GSoVbDo/9kzzc2z9iVFXoK+M1exDUpPgnI/gHbxqxSkCAwEAAQ==
 -----END PUBLIC KEY-----`;
 
+// ✨ 1. '병맛' 아바<em>타</em>와 <em>메</em>시지를 <em>제</em>어할 <em>요</em>소들을 <em>미</em>리 <em>찾</em>아<em>둡</em>니다.
+const avatarImage = document.getElementById('avatar-image');
+const avatarMessage = document.getElementById('avatar-message');
 
-// 1. 스캔 성공 시 실행될 '병맛' 콜백 함수
+
+// 2. 스캔 성공 시 실행될 '병맛' 콜백 함수
 function onScanSuccess(decodedText, decodedResult) {
     // decodedText: 스캔된 QR의 텍스트 데이터
     console.log(`QR 스캔 성공: ${decodedText}`);
@@ -16,6 +19,10 @@ function onScanSuccess(decodedText, decodedResult) {
     // 스캐너를 잠시 멈춥니다.
     html5QrcodeScanner.pause();
     
+    // ✨ <em>아</em>바<em>타</em>와 <em>메</em>시지를 '<em>검</em>증 <em>중</em>...' <em>상</em>태로 <em>변</em>경
+    avatarMessage.textContent = "서버에서 '찐큐'인지 검증 중... (대충 로딩)";
+    avatarImage.src = 'images/avatar-surprised.png'; // 3번 (놀란/검증) 표정
+
     try {
         // 1. 스캔한 텍스트를 JSON으로 파싱 시도
         const qrData = JSON.parse(decodedText);
@@ -34,35 +41,40 @@ function onScanSuccess(decodedText, decodedResult) {
 
             if (isValid) {
                 // 🚀 검증 성공! (서버가 발행한 '찐큐'가 맞음)
-                alert("🎉 검증 성공! '찐큐'입니다! (쿠폰 획득)");
+                avatarImage.src = 'images/avatar-happy.png'; // ✨ 1번 (행복) 표정
+                avatarMessage.textContent = "🎉 검증 성공! '찐큐'입니다! (대충 행복)";
                 // (TODO: qrData.data를 사용해 실제 쿠폰 처리)
             } else {
                 // 🚨 검증 실패! (서명은 있지만, 위조됨)
-                alert("🚨 위조 감지! '짭큐'입니다!");
+                avatarImage.src = 'images/avatar-angry.png'; // ✨ 2번 (화남) 표정
+                avatarMessage.textContent = "🚨 위조 감지! '짭큐'입니다! (대충 화남)";
             }
 
         } else {
             // 🚨 그냥 일반 QR (예: http://google.com)
-            alert("🚨 '짭큐' 감지! (이건 '대충가이드' 공식 QR이 아닙니다!)");
+            avatarImage.src = 'images/avatar-angry.png'; // ✨ 2번 (화남) 표정
+            avatarMessage.textContent = "🚨 '짭큐' 감지! (이건 공식 QR 아님)";
         }
     } catch (error) {
         // 🚨 JSON 파싱 실패 (그냥 텍스트 QR)
-        alert("🚨 '짭큐' 감지! (이건 '대충가이드' 공식 QR이 아닙니다!)");
+        avatarImage.src = 'images/avatar-angry.png'; // ✨ 2번 (화남) 표정
+        avatarMessage.textContent = "🚨 '짭큐' 감지! (이상한 QR임)";
     }
 
-    // 2초 후에 다시 스캔 시작
+    // ✨ 4<em>초</em> <em>후</em>에 <em>다</em>시 <em>스</em>캔 <em>시</em>작 <em>및</em> <em>아</em>바<em>타</em>/<em>메</em>시지 <em>초</em>기<em>화</em>
     setTimeout(() => {
+        avatarMessage.textContent = "'찐큐'를 네모 안에 '대충' 맞춰주세요";
+        avatarImage.src = 'images/avatar-surprised.png'; // 3번 (놀란) 표정으로 복귀
         html5QrcodeScanner.resume();
-    }, 2000);
+    }, 4000); // 4초간 결과를 보여줌
 }
 
-// 2. 스캔 실패 시 (무시해도 됨)
+// 3. 스캔 실패 시 (무시해도 됨)
 function onScanFailure(error) {
     // (QR을 못 찾으면 계속 호출됨 - 무시)
-    // console.warn(`QR 스캔 실패: ${error}`);
 }
 
-// 3. QR 스캐너 객체 생성
+// 4. QR 스캐너 객체 생성
 const html5QrcodeScanner = new Html5QrcodeScanner(
     "qr-reader",  // 스캐너를 삽입할 div의 ID
     { 
@@ -72,6 +84,6 @@ const html5QrcodeScanner = new Html5QrcodeScanner(
     /* verbose= */ false
 );
 
-// 4. 스캐너 렌더링 (카메라 시작!)
+// 5. 스캐너 렌더링 (카메라 시작!)
 // Vercel/Netlify에 배포된 https:// 주소에서만 작동합니다.
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
