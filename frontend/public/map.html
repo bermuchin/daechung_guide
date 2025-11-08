@@ -118,19 +118,17 @@
                 const content = item.querySelector('.place-content');
                 const arrow = item.querySelector('.arrow');
 
-                const isOpen = content.classList.contains('open');
+                // 다른 모든 항목들을 닫기
+                document.querySelectorAll('.place-content.open').forEach(openContent => {
+                    if (openContent !== content) {
+                        openContent.classList.remove('open');
+                        openContent.closest('.spot-item').querySelector('.arrow').classList.remove('open');
+                    }
+                });
 
-                if (isOpen) {
-                    // 닫기
-                    content.classList.remove('open');
-                    content.style.maxHeight = null;
-                    arrow.classList.remove('open');
-                } else {
-                    // 열기
-                    content.classList.add('open');
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                    arrow.classList.add('open');
-                }
+                // 현재 항목 토글
+                content.classList.toggle('open');
+                arrow.classList.toggle('open');
             });
         });
     </script>
