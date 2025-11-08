@@ -217,19 +217,14 @@ xQIDAQAB
                         facingMode: "environment",
                         width: { min: 1280, ideal: 3840, max: 4096 },  // UHD(4K) 해상도
                         height: { min: 1280, ideal: 3840, max: 4096 },
-                        aspectRatio: 1,
-                        focusMode: "continuous"  // 자동 초점 모드 유지
+                        aspectRatio: 1
                     } : {
                         facingMode: "environment",
                         width: { min: 1280, ideal: 3840, max: 4096 },
                         height: { min: 1280, ideal: 3840, max: 4096 },
-                        aspectRatio: 1,
-                        focusMode: "continuous"
+                        aspectRatio: 1
                     },
                     showTorchButtonIfSupported: true,
-                    formatsToSupport: ["qr_code"],
-                    disableFlip: false,
-                    verbose: true
                 },
                 false
             );
