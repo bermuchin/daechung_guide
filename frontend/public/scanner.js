@@ -209,23 +209,27 @@ xQIDAQAB
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader",
                 { 
-                    fps: 30,  // 프레임 레이트 최대로 증가
+                    fps: 15,  // FPS 낮춤
                     qrbox: { width: qrboxSize, height: qrboxSize },
                     rememberLastUsedCamera: true,
                     videoConstraints: rearCamera ? {
                         deviceId: rearCamera.deviceId,
                         facingMode: "environment",
-                        width: { min: 1280, ideal: 4096, max: 4096 },
-                        height: { min: 1280, ideal: 4096, max: 4096 },
-                        aspectRatio: 1
+                        width: { min: 1280, ideal: 3840, max: 4096 },  // UHD(4K) 해상도
+                        height: { min: 1280, ideal: 3840, max: 4096 },
+                        aspectRatio: 1,
+                        focusMode: "continuous"  // 자동 초점 모드 유지
                     } : {
                         facingMode: "environment",
-                        width: { min: 1280, ideal: 4096, max: 4096 },
-                        height: { min: 1280, ideal: 4096, max: 4096 },
-                        aspectRatio: 1
+                        width: { min: 1280, ideal: 3840, max: 4096 },
+                        height: { min: 1280, ideal: 3840, max: 4096 },
+                        aspectRatio: 1,
+                        focusMode: "continuous"
                     },
                     showTorchButtonIfSupported: true,
-                    formatsToSupport: ["qr_code"]
+                    formatsToSupport: ["qr_code"],
+                    disableFlip: false,
+                    verbose: true
                 },
                 false
             );
