@@ -39,9 +39,38 @@
 
         <h3 class="keyword-title result-title">'친구' + '맛집' + '뿜뿜!' 추천</h3>
         <ul class="spot-list">
+           <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 1 (데이트 장소) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 서구 둔산동</p>
+                    <p>☕ 분위기: 조용하고 로맨틱한 조명, 커플석 위주</p>
+                    <p>💡 특징: 야외 테라스와 야경이 아름다워 데이트 명소로 인기</p>
+                </div>
+            </li>
             <li class="spot-item">
-                <span class="spot-marker">A</span>
-                <p>장소 1 (대충 시끄러운 맛집)</p>
+                <div class="spot-header">
+                    <span class="spot-marker">B</span>
+                    <p> 장소 2 (대충 맛있는 음식이 있는 곳) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 유성구 궁동</p>
+                    <p>☕ 분위기: 활기찬 거리의 푸드존, 캐주얼한 식당들 밀집</p>
+                    <p>💡 특징: 현지인 추천 맛집이 많고 야식 시간대에도 붐빔</p>
+                </div>
+            </li>
+            <li class="spot-item">
+                <div class="spot-header">
+                    <span class="spot-marker">C</span>
+                    <p> 장소 3 (구경할 거리가 많은 곳) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 중구 대흥동</p>
+                    <p>☕ 분위기: 예술 거리 특유의 자유로운 분위기, 벽화와 거리 공연</p>
+                    <p>💡 특징: 주말마다 플리마켓과 전시가 열리는 문화 명소</p>
+                </div>
             </li>
         </ul>
 
@@ -66,5 +95,30 @@
         </a>
     </nav>
 
+
+    <script>
+        // 아코디언 스타일 인터페이스
+        document.querySelectorAll('.spot-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.place-content');
+                const arrow = item.querySelector('.arrow');
+
+                const isOpen = content.classList.contains('open');
+
+                if (isOpen) {
+                    // 닫기
+                    content.classList.remove('open');
+                    content.style.maxHeight = null;
+                    arrow.classList.remove('open');
+                } else {
+                    // 열기
+                    content.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.classList.add('open');
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>

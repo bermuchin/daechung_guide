@@ -21,18 +21,40 @@
 
         <ul class="spot-list">
             <li class="spot-item">
-                <span class="spot-marker">A</span>
-                <p>장소 1 (대충 힙한 카페)</p>
+                <div class="spot-header">
+                    <span class="spot-marker">A</span>
+                    <p> 장소 1 (대충 힙한 카페) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 중구 은행동</p>
+                    <p>☕ 분위기: 감성적인 인테리어, 수제 디저트</p>
+                    <p>💡 특징: 지역 예술가 전시와 협업 이벤트가 자주 열림</p>
+                </div>
             </li>
             <li class="spot-item">
-                <span class="spot-marker">B</span>
-                <p>장소 2 (대충 신기한 소품샵)</p>
+                <div class="spot-header">
+                    <span class="spot-marker">B</span>
+                    <p> 장소 2 (대충 신기한 소품샵) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 동구 소제동</p>
+                    <p>🛍️ 특징: 로컬 브랜드 굿즈, 향초, 엽서 등 감성 소품 판매</p>
+                    <p>🎁 이벤트: 직접 포장 워크숍 진행</p>
+                </div>
             </li>
             <li class="spot-item">
-                <span class="spot-marker">C</span>
-                <p>장소 3 (대충 멍때리는 공원)</p>
+                <div class="spot-header">
+                    <span class="spot-marker">C</span>
+                    <p> 장소 3 (대충 멍때리는 공원) <span class="arrow">▼</span> </p>
+                </div>
+                <div class="place-content">
+                    <p>📍 위치: 대전 동구 소제동</p>
+                    <p>🌳 특징: 잔디밭과 호수가 있는 조용한 공간</p>
+                    <p>🎶 팁: 주말 버스킹과 야시장 열림</p>
+                </div>
             </li>
         </ul>
+
     </main>
 
     <nav class="bottom-nav">
@@ -72,9 +94,9 @@
 
         // 5. '병맛' 마커(A,B,C) 데이터
         const markersData = [
-            { lat: 36.3330, lng: 127.4340, label: 'A' }, // 장소 1
-            { lat: 36.3320, lng: 127.4355, label: 'B' }, // 장소 2
-            { lat: 36.3315, lng: 127.4330, label: 'C' }  // 장소 3
+            { lat: 36.3340, lng: 127.4310, label: 'A' }, // 장소 1
+            { lat: 36.3300, lng: 127.4385, label: 'B' }, // 장소 2
+            { lat: 36.3315, lng: 127.4300, label: 'C' }  // 장소 3
         ];
 
         // 6. 마커(A,B,C) 생성하기 (스케치와 똑같이!)
@@ -87,6 +109,28 @@
                 position: new kakao.maps.LatLng(data.lat, data.lng),
                 content: content,
                 map: map
+            });
+        });
+
+        // 아코디언 스타일 인터페이스
+        document.querySelectorAll('.spot-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.place-content');
+                const arrow = item.querySelector('.arrow');
+
+                const isOpen = content.classList.contains('open');
+
+                if (isOpen) {
+                    // 닫기
+                    content.classList.remove('open');
+                    content.style.maxHeight = null;
+                    arrow.classList.remove('open');
+                } else {
+                    // 열기
+                    content.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.classList.add('open');
+                }
             });
         });
     </script>

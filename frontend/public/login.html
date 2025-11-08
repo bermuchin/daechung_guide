@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대충가이드 - 로그인</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 로그인 페이지 전용 스타일 (기존 style.css와 충돌 없음) */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 4.375rem - 4.375rem); /* 헤더 + 네비 제외 */
+            padding: 2rem;
+        }
+
+        .login-title {
+            color: #FF6600;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .login-btn {
+            width: 250px;
+            height: 50px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 10px 0;
+            cursor: pointer;
+            border: none;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .google {
+            background-color: white;
+            border: 2px solid #FF6600;
+            color: #4D3319;
+            /* 병맛 스러운 버튼 스타일 추가 */
+            box-shadow: 4px 4px 0px #FF6600;
+            transition: all 0.1s ease-in;
+        }
+
+        .google:active {
+            box-shadow: 1px 1px 0px #FF6600;
+            transform: translate(3px, 3px);
+        }
+
+        /* 로그인 상태 표시 */
+        .user-profile {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .user-profile img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #FF6600;
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <span>앱 다운로드</span>
+        <span>우편함</span>
+    </header>
+
+    <main class="login-container">
+        <h1 class="login-title">대충가이드 로그인</h1>
+        <button class="login-btn google" onclick="loginWithGoogle()">구글로 로그인</button>
+        <div id="user-profile" class="user-profile" style="display: none;">
+            <img id="user-photo" src="" alt="프로필 사진">
+            <p id="user-name"></p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span>🏠</span>
+            <p>홈</p>
+        </a>
+        <a href="map.html" class="nav-item">
+            <span>📍</span>
+            <p>지금 여기 대전</p>
+        </a>
+        <a href="keyword.html" class="nav-item">
+            <span>🔑</span>
+            <p>키워드 추천</p>
+        </a>
+        <a href="scanner.html" class="nav-item">
+            <span>📷</span>
+            <p>QR 찍기</p>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8L_qjOa2nK2VYoYnc3ywGGwUlt_kDTB8",
+            authDomain: "daechungguide.firebaseapp.com",
+            projectId: "daechungguide",
+            storageBucket: "daechungguide.appspot.com",
+            messagingSenderId: "71022966917",
+            appId: "1:71022966917:web:074af9865804c0681ed1ec"
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // 로그인 상태 감지
+        onAuthStateChanged(auth, (user) => {
+            const userProfile = document.getElementById('user-profile');
+            const loginBtn = document.querySelector('.login-btn');
+            
+            if (user) {
+                // 로그인 된 경우
+                document.getElementById('user-photo').src = user.photoURL;
+                document.getElementById('user-name').textContent = `${user.displayName}님`;
+                userProfile.style.display = 'block';
+                loginBtn.style.display = 'none';
+            } else {
+                // 로그아웃 된 경우
+                userProfile.style.display = 'none';
+                loginBtn.style.display = 'block';
+            }
+        });
+
+        // 로그인 함수
+        window.loginWithGoogle = async function() {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                console.log("✅ 로그인 성공:", user);
+            } catch (error) {
+                console.error("로그인 실패:", error);
+                alert("로그인 실패: " + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
