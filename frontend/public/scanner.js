@@ -19,8 +19,13 @@ function debugLog(message, isError = false) {
 document.addEventListener("DOMContentLoaded", () => {
     // 🔐 '보안 QR' 검증을 위한 '공개 키'
     const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKGINJGCdDOQOTuxMJz9yLMl5mJ0
-OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/oiyW968zQdfKWikH5S
+hX8P7PofAfkDeCLLedP0DwdznrogJ628MjgK4RpFVmezYfq7B1yDa1CpiTON3hde
+0qZt39DdBjUZWCU0hQE3RJkLVrF02UT0Qdax/uC0Z6HUsCvwUaE2oqJP+Y1RFL7q
+ashswM3OW4j5gF7Gs45jvUxOAkXNDp9J06H+IxKhONDjO/Kl/0mA8381VKdU3gSf
+YhaCEzPecexeNR77Zx9s3ZicpFVmD05ruKK/uHWFwzyWsnYFEaHJtFuWy8Oc7Gm9
+B4CdjOhJKsjqQgw2J7KsdKZWNkX7v25MWIAnvzjpRr2POU4bd190wTT0XXfu4VmN
+xQIDAQAB
 -----END PUBLIC KEY-----`;
 
     const avatarImage = document.getElementById('avatar-image');
@@ -64,17 +69,84 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
 
             if (qrData.data && qrData.signature) {
                 debugLog("서명 검증 시작...", false);
-                const sig = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
-                sig.init(PUBLIC_KEY);
-                sig.updateString(qrData.data);
-                const isValid = sig.verify(qrData.signature);
+                
+                let verificationData = qrData.data;
+                debugLog("1. 원본 데이터:", false);
+                debugLog(verificationData, false);
+                
+                // 데이터가 이미 JSON 문자열인지 확인하고 아니면 변환
+                if (typeof verificationData !== 'string') {
+                    debugLog("데이터를 JSON 문자열로 변환", false);
+                    verificationData = JSON.stringify(verificationData);
+                }
+                
+                debugLog("2. 최종 검증 데이터:", false);
+                debugLog(verificationData, false);
+                
+                debugLog("3. 사용할 공개키:", false);
+                const formattedKey = PUBLIC_KEY.replace(/\\n/g, '\n');
+                debugLog(formattedKey, false);
+                
+                debugLog("4. 검증할 서명:", false);
+                debugLog(qrData.signature, false);
+                
+                try {
+                    debugLog("5. 서명 객체 초기화", false);
+                    const sig = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
+                    
+                    debugLog("6. 공개키 설정", false);
+                    sig.init(formattedKey);
+                    
+                    debugLog("7. 데이터 업데이트", false);
+                    sig.updateString(verificationData);
+                    
+                    debugLog("8. 서명 검증 시도", false);
+                    // jsrsasign의 Signature.verify는 기본적으로 16진수(HEX) 서명을 기대합니다.
+                    // 백엔드에서 생성한 서명은 base64이므로 hex로 변환해서 전달합니다.
+                    function base64ToHex(b64) {
+                        try {
+                            const raw = atob(b64);
+                            let result = '';
+                            for (let i = 0; i < raw.length; i++) {
+                                result += raw.charCodeAt(i).toString(16).padStart(2, '0');
+                            }
+                            return result;
+                        } catch (e) {
+                            throw new Error('base64->hex 변환 실패: ' + e);
+                        }
+                    }
 
-                if (isValid) {
-                    avatarImage.src = 'images/avatar-happy.png';
-                    avatarMessage.textContent = "🎉 검증 성공! '찐큐'입니다! (대충 행복)";
-                } else {
-                    avatarImage.src = 'images/avatar-angry.png';
-                    avatarMessage.textContent = "🚨 위조 감지! '짭큐'입니다! (대충 화남)";
+                    let sigHex;
+                    if (typeof b64tohex === 'function') {
+                        sigHex = b64tohex(qrData.signature);
+                    } else {
+                        sigHex = base64ToHex(qrData.signature);
+                    }
+
+                    debugLog('서명(HEX, 앞부분): ' + sigHex.slice(0, 64) + '...', false);
+                    const isValid = sig.verify(sigHex);
+                    debugLog("9. 서명 검증 결과: " + isValid, false);
+
+                    if (isValid) {
+                        avatarImage.src = 'images/avatar-happy.png';
+                        avatarMessage.textContent = "🎉 검증 성공! '찐큐'입니다! (대충 행복)";
+                        
+                        // QR 데이터 내용도 표시
+                        try {
+                            const prettyData = JSON.stringify(qrData.data, null, 2);
+                            debugLog("QR 데이터 내용:", false);
+                            debugLog(prettyData, false);
+                        } catch (e) {
+                            debugLog("데이터 출력 중 오류", true);
+                        }
+                    } else {
+                        avatarImage.src = 'images/avatar-angry.png';
+                        avatarMessage.textContent = "🚨 위조 감지! '짭큐'입니다! (대충 화남)";
+                    }
+                } catch (signError) {
+                    debugLog("서명 검증 중 오류 발생", true);
+                    debugLog(signError.toString(), true);
+                    throw signError;
                 }
             } else {
                 avatarImage.src = 'images/avatar-angry.png';
@@ -142,13 +214,13 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
                     videoConstraints: rearCamera ? {
                         deviceId: rearCamera.deviceId,
                         facingMode: "environment",
-                        width: { min: 640, ideal: 1080, max: 1920 },
-                        height: { min: 640, ideal: 1080, max: 1920 },
+                        width: { min: 1280, ideal: 2560, max: 4096 },
+                        height: { min: 1280, ideal: 2560, max: 4096 },
                         aspectRatio: 1
                     } : {
                         facingMode: "environment",
-                        width: { min: 640, ideal: 1080, max: 1920 },
-                        height: { min: 640, ideal: 1080, max: 1920 },
+                        width: { min: 1280, ideal: 2560, max: 4096 },
+                        height: { min: 1280, ideal: 2560, max: 4096 },
                         aspectRatio: 1
                     },
                     showTorchButtonIfSupported: true
