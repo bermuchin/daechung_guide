@@ -209,21 +209,42 @@ xQIDAQAB
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader",
                 { 
-                    fps: 10,
+                    fps: 30,  // 프레임 레이트 최대로 증가
                     qrbox: { width: qrboxSize, height: qrboxSize },
+                    rememberLastUsedCamera: true,
                     videoConstraints: rearCamera ? {
                         deviceId: rearCamera.deviceId,
                         facingMode: "environment",
-                        width: { min: 1280, ideal: 2560, max: 4096 },
-                        height: { min: 1280, ideal: 2560, max: 4096 },
-                        aspectRatio: 1
+                        width: { min: 2160, ideal: 4096, max: 8192 },  // 8K 지원
+                        height: { min: 2160, ideal: 4096, max: 8192 }, // 8K 지원
+                        aspectRatio: 1,
+                        focusMode: "continuous",
+                        exposureMode: "continuous",
+                        whiteBalanceMode: "continuous", // 자동 화이트밸런스
+                        exposureCompensation: 0.5,      // 약간 밝게
+                        brightness: 1,                   // 밝기 최대
+                        contrast: 1,                    // 대비 최대
+                        sharpness: 1,                  // 선명도 최대
+                        zoom: 1.0                      // 기본 줌
                     } : {
                         facingMode: "environment",
-                        width: { min: 1280, ideal: 2560, max: 4096 },
-                        height: { min: 1280, ideal: 2560, max: 4096 },
-                        aspectRatio: 1
+                        width: { min: 2160, ideal: 4096, max: 8192 },
+                        height: { min: 2160, ideal: 4096, max: 8192 },
+                        aspectRatio: 1,
+                        focusMode: "continuous",
+                        exposureMode: "continuous",
+                        whiteBalanceMode: "continuous",
+                        exposureCompensation: 0.5,
+                        brightness: 1,
+                        contrast: 1,
+                        sharpness: 1,
+                        zoom: 1.0
                     },
-                    showTorchButtonIfSupported: true
+                    showTorchButtonIfSupported: true,
+                    formatsToSupport: [ Html5QrcodeScanner.FORMTAT_QR_CODE ],
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true // 최신 바코드 감지 API 사용
+                    }
                 },
                 false
             );
