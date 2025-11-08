@@ -67,11 +67,30 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
     async function startCamera() {
         try {
             avatarMessage.textContent = "카메라 권한을 허용해주세요!";
+            console.log('카메라 시작 시도...');
             
             // 이전 스캐너가 있다면 정리
             if (html5QrcodeScanner) {
+                console.log('이전 스캐너 정리 중...');
                 await html5QrcodeScanner.clear();
             }
+
+            // 먼저 기기의 카메라 접근 가능 여부 확인
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const cameras = devices.filter(device => device.kind === 'videoinput');
+            console.log('사용 가능한 카메라:', cameras.length, '개');
+            
+            if (cameras.length === 0) {
+                throw new Error('사용 가능한 카메라가 없습니다.');
+            }
+
+            // 후면 카메라 찾기 (모바일용)
+            const rearCamera = cameras.find(camera => 
+                camera.label.toLowerCase().includes('back') || 
+                camera.label.toLowerCase().includes('rear') ||
+                camera.label.toLowerCase().includes('환경') ||
+                camera.label.toLowerCase().includes('후면')
+            );
 
             // 스캐너 새로 생성
             html5QrcodeScanner = new Html5QrcodeScanner(
@@ -79,16 +98,21 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
                 { 
                     fps: 10,
                     qrbox: { width: 250, height: 250 },
-                    // 모바일 최적화 설정
-                    formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ],
-                    aspectRatio: 1.0,
+                    videoConstraints: rearCamera ? {
+                        deviceId: rearCamera.deviceId,
+                        facingMode: "environment"
+                    } : {
+                        facingMode: "environment"
+                    },
+                    aspectRatio: window.innerWidth / window.innerHeight,
                     showTorchButtonIfSupported: true
                 },
                 false
             );
 
+            console.log('스캐너 렌더링 시도...');
             await html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            console.log('카메라 시작됨');
+            console.log('카메라 시작 성공!');
             
             // 시작 버튼 숨기기
             const startButton = document.querySelector('.start-button');
@@ -98,17 +122,26 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
             avatarImage.src = 'images/avatar-surprised.png';
 
         } catch (err) {
-            console.error('카메라 시작 실패:', err);
+            console.error('카메라 시작 실패:', err.name, err.message);
+            console.error('전체 에러:', err);
+            
+            let errorMessage = "카메라를 시작할 수 없어요! ";
             
             if (err.name === 'NotAllowedError') {
-                avatarMessage.textContent = "😢 카메라 권한이 거부되었어요!";
-                avatarImage.src = 'images/avatar-angry.png';
-                showRetryButton();
-            } else {
-                avatarMessage.textContent = "카메라를 시작할 수 없어요! 다시 시도해주세요.";
-                avatarImage.src = 'images/avatar-angry.png';
-                showRetryButton();
+                errorMessage = "😢 카메라 권한이 거부되었어요! 브라우저 설정에서 카메라 권한을 허용해주세요.";
+            } else if (err.name === 'NotFoundError') {
+                errorMessage = "카메라를 찾을 수 없어요! 카메라가 연결되어 있는지 확인해주세요.";
+            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                errorMessage = "카메라가 다른 앱에서 사용 중이에요! 다른 앱을 종료하고 다시 시도해주세요.";
+            } else if (err.name === 'OverconstrainedError') {
+                errorMessage = "요청한 카메라 설정을 사용할 수 없어요. 다시 시도할게요.";
+                // 후면 카메라 강제 설정을 제거하고 다시 시도
+                return startCamera();
             }
+            
+            avatarMessage.textContent = errorMessage;
+            avatarImage.src = 'images/avatar-angry.png';
+            showRetryButton();
         }
     }
 
