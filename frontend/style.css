@@ -1,0 +1,122 @@
+/* --- 0. '병맛' 폰트 세팅 --- */
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+
+/* --- 1. 글로벌 스타일 (모든 페이지 공통) --- */
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Gaegu', cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background-color: #FFFBF5;
+    color: #4D3319;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 5rem;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* --- 2. 아코디언 스타일 인터페이스 --- */
+
+/* 장소 아이템 컨테이너 */
+.spot-item {
+    background-color: #ffffff;
+    border: 2px solid #FF6600;
+    border-radius: 8px;
+    margin-bottom: 0.625rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 헤더 영역 (클릭 가능한 부분) */
+.spot-header {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: white;
+}
+
+/* 마커 (A, B, C) */
+.spot-marker {
+    background: #FF6600;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+/* ▼ 화살표 */
+.spot-item .arrow {
+    margin-left: auto;
+    color: #FF6600;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.spot-item .arrow.open {
+    transform: rotate(180deg);
+}
+
+/* 상세 내용 영역 */
+.place-content {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #FFF7ED;
+    border-top: 1px solid #FFD1A9;
+    border-radius: 0 0 8px 8px;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    padding: 0 1rem;
+    display: none;
+}
+
+/* 펼쳐진 상태 */
+.place-content.open {
+    padding: 1rem;
+    display: block;
+    max-height: 500px;
+}
+
+/* 상세 내용 스타일링 */
+.place-content p {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+    color: #4D3319;
+    font-size: 1rem;
+}
+
+/* --- 3. 컨테이너 --- */
+.container {
+    padding: 1.25rem;
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+/* --- 4. 모바일 최적화 --- */
+@media (max-width: 600px) {
+    html {
+        font-size: 14px;
+    }
+
+    .spot-header {
+        padding: 12px 15px;
+    }
+
+    .spot-marker {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+    }
+
+    .place-content.open {
+        padding: 0.8rem;
+    }
+}
