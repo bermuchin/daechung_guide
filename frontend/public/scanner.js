@@ -1,5 +1,21 @@
 // frontend/public/scanner.js (✨ '안정성 강화' 버전)
 
+// 디버그 콘솔에 로그 출력하는 함수
+function debugLog(message, isError = false) {
+    const debugConsole = document.getElementById('debug-console');
+    if (debugConsole) {
+        debugConsole.style.display = 'block';
+        const logEntry = document.createElement('div');
+        logEntry.style.color = isError ? '#ff6b6b' : '#69db7c';
+        logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        debugConsole.appendChild(logEntry);
+        // 최근 로그가 보이도록 스크롤
+        debugConsole.scrollTop = debugConsole.scrollHeight;
+    }
+    // 기존 console 로그도 유지
+    isError ? console.error(message) : console.log(message);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // 🔐 '보안 QR' 검증을 위한 '공개 키'
     const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -67,11 +83,11 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
     async function startCamera() {
         try {
             avatarMessage.textContent = "카메라 권한을 허용해주세요!";
-            console.log('카메라 시작 시도...');
+            debugLog('카메라 시작 시도...');
             
             // 이전 스캐너가 있다면 정리
             if (html5QrcodeScanner) {
-                console.log('이전 스캐너 정리 중...');
+                debugLog('이전 스캐너 정리 중...');
                 await html5QrcodeScanner.clear();
             }
 
@@ -110,9 +126,9 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
                 false
             );
 
-            console.log('스캐너 렌더링 시도...');
+            debugLog('스캐너 렌더링 시도...');
             await html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-            console.log('카메라 시작 성공!');
+            debugLog('카메라 시작 성공!');
             
             // 시작 버튼 숨기기
             const startButton = document.querySelector('.start-button');
@@ -122,8 +138,8 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
             avatarImage.src = 'images/avatar-surprised.png';
 
         } catch (err) {
-            console.error('카메라 시작 실패:', err.name, err.message);
-            console.error('전체 에러:', err);
+            debugLog(`카메라 시작 실패: ${err.name} - ${err.message}`, true);
+            debugLog(`전체 에러: ${err.toString()}`, true);
             
             let errorMessage = "카메라를 시작할 수 없어요! ";
             

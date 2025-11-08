@@ -14,6 +14,9 @@
     </header>
 
     <main class="scanner-main-content">
+        <!-- 디버그 콘솔 추가 -->
+        <div id="debug-console" style="background: rgba(0,0,0,0.8); color: white; position: fixed; top: 0; left: 0; right: 0; max-height: 150px; overflow-y: auto; z-index: 1000; font-size: 12px; padding: 10px; display: none;">
+        </div>
         
         <div class="avatar-container scanner-avatar">
             <img id="avatar-image" src="images/avatar-angry.png" alt="스캔하는 아바타">
@@ -45,9 +48,19 @@
         </a>
     </nav>
 
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsrsasign/lib/jsrsasign-all-min.js"></script>
-    
-<script src="scanner.js?v=2"></script>
+    <script>
+        // 라이브러리 로드 확인
+        window.addEventListener('load', function() {
+            if (typeof Html5QrcodeScanner === 'undefined') {
+                console.error('QR 스캐너 라이브러리 로드 실패!');
+                alert('QR 스캐너를 불러오는데 실패했습니다. 페이지를 새로고침 해주세요.');
+            } else {
+                console.log('QR 스캐너 라이브러리 로드 성공!');
+            }
+        });
+    </script>
+    <script src="scanner.js?v=3"></script>
 </body>
 </html>
