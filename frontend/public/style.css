@@ -411,6 +411,40 @@ body {
 
 /* --- 7. 'QR 스캐너' 페이지 전용 스타일 (scanner.html) --- */
 
+.start-button, .retry-button {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+.retry-button {
+    background-color: #f44336;
+}
+
+#qr-reader {
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#qr-reader video {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#qr-reader__scan_region img {
+    display: none !important;  /* html5-qrcode 기본 이미지 숨김 */
+}
+
 .scanner-body {
     display: flex;
     flex-direction: column;

@@ -1,25 +1,24 @@
-// frontend/public/scanner.js (✨ 'DOMContentLoaded' 적용)
+// frontend/public/scanner.js (✨ '안정성 강화' 버전)
 
-// -----------------------------------------------------------
-// ✨ 1. 이 이벤트 리스너로 코드 전체를 감싸줍니다.
-// "HTML 문서가 완전히 준비되면, { ... } 안의 코드를 실행해라"
-// -----------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-
     // 🔐 '보안 QR' 검증을 위한 '공개 키'
     const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKGINJGCdDOQOTuxMJz9yLMl5mJ0
 OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
 -----END PUBLIC KEY-----`;
 
-    // ✨ 2. '병맛' 아바타와 메시지를 제어할 요소들을 미리 찾아둡니다.
     const avatarImage = document.getElementById('avatar-image');
     const avatarMessage = document.getElementById('avatar-message');
+    const qrContainer = document.getElementById('qr-reader-container');
+    
+    let html5QrcodeScanner = null;
 
-    // 3. 스캔 성공 시 실행될 '병맛' 콜백 함수
+    // QR 스캔 성공 시 실행될 콜백
     function onScanSuccess(decodedText, decodedResult) {
-        console.log(`QR 스캔 성공: ${decodedText}`);
-        html5QrcodeScanner.pause();
+        console.log(`QR 스캔 성공:`, decodedText);
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.pause();
+        }
         
         avatarMessage.textContent = "서버에서 '찐큐'인지 검증 중... (대충 로딩)";
         avatarImage.src = 'images/avatar-surprised.png';
@@ -44,6 +43,7 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
                 avatarMessage.textContent = "🚨 '짭큐' 감지! (이건 공식 QR 아님)";
             }
         } catch (error) {
+            console.error('QR 파싱 에러:', error);
             avatarImage.src = 'images/avatar-angry.png';
             avatarMessage.textContent = "🚨 '짭큐' 감지! (이상한 QR임)";
         }
@@ -51,30 +51,87 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
         setTimeout(() => {
             avatarMessage.textContent = "'찐큐'를 네모 안에 '대충' 맞춰주세요";
             avatarImage.src = 'images/avatar-surprised.png';
-            html5QrcodeScanner.resume();
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.resume();
+            }
         }, 4000);
     }
 
-    // 4. 스캔 실패 시 (무시해도 됨)
+    // QR 스캔 실패 시
     function onScanFailure(error) {
-        // (QR을 못 찾으면 계속 호출됨 - 무시)
+        // 일반적인 스캔 실패는 무시 (프레임마다 호출됨)
+        // console.debug('QR 스캔 실패:', error);
     }
 
-    // 5. QR 스캐너 객체 생성
-    const html5QrcodeScanner = new Html5QrcodeScanner(
-        "qr-reader",  // 스캐너를 삽입할 div의 ID
-        { 
-            fps: 10, 
-            qrbox: { width: 250, height: 250 } 
-        },
-        /* verbose= */ false
-    );
+    // 카메라 시작 함수
+    async function startCamera() {
+        try {
+            avatarMessage.textContent = "카메라 권한을 허용해주세요!";
+            
+            // 이전 스캐너가 있다면 정리
+            if (html5QrcodeScanner) {
+                await html5QrcodeScanner.clear();
+            }
 
-    // 6. 스캐너 렌더링 (카메라 시작!)
-    // Vercel/Netlify에 배포된 https:// 주소에서만 작동합니다.
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            // 스캐너 새로 생성
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "qr-reader",
+                { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    // 모바일 최적화 설정
+                    formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ],
+                    aspectRatio: 1.0,
+                    showTorchButtonIfSupported: true
+                },
+                false
+            );
 
-// -----------------------------------------------------------
-// ✨ 1. (끝) 이벤트 리스너 닫기
-// -----------------------------------------------------------
+            await html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            console.log('카메라 시작됨');
+            
+            // 시작 버튼 숨기기
+            const startButton = document.querySelector('.start-button');
+            if (startButton) startButton.style.display = 'none';
+            
+            avatarMessage.textContent = "'찐큐'를 네모 안에 '대충' 맞춰주세요";
+            avatarImage.src = 'images/avatar-surprised.png';
+
+        } catch (err) {
+            console.error('카메라 시작 실패:', err);
+            
+            if (err.name === 'NotAllowedError') {
+                avatarMessage.textContent = "😢 카메라 권한이 거부되었어요!";
+                avatarImage.src = 'images/avatar-angry.png';
+                showRetryButton();
+            } else {
+                avatarMessage.textContent = "카메라를 시작할 수 없어요! 다시 시도해주세요.";
+                avatarImage.src = 'images/avatar-angry.png';
+                showRetryButton();
+            }
+        }
+    }
+
+    // 재시도 버튼 표시
+    function showRetryButton() {
+        // 이전 버튼들 제거
+        const oldButtons = qrContainer.querySelectorAll('.retry-button, .start-button');
+        oldButtons.forEach(btn => btn.remove());
+
+        const retryBtn = document.createElement('button');
+        retryBtn.textContent = "카메라 다시 시작하기";
+        retryBtn.className = "retry-button";
+        retryBtn.onclick = startCamera;
+        qrContainer.appendChild(retryBtn);
+    }
+
+    // 시작 버튼 생성 및 표시
+    const startBtn = document.createElement('button');
+    startBtn.textContent = "QR 스캔 시작하기";
+    startBtn.className = "start-button";
+    startBtn.onclick = startCamera;
+    qrContainer.appendChild(startBtn);
+
+    // 시작 안내 메시지
+    avatarMessage.textContent = "아래 버튼을 눌러서 시작하세요!";
 });
