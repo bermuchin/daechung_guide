@@ -412,33 +412,71 @@ body {
 /* --- 7. 'QR 스캐너' 페이지 전용 스타일 (scanner.html) --- */
 
 .start-button, .retry-button {
+    font-family: 'Gaegu', cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    
     display: block;
+    width: 80%;
+    max-width: 300px;
     margin: 20px auto;
-    padding: 12px 24px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+    padding: 1.25rem 0.5rem;
+    
+    background-color: #ffffff;
+    border: 2px solid #FF6600;
     border-radius: 8px;
+    color: #4D3319;
     cursor: pointer;
-    font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    
+    box-shadow: 4px 4px 0px #FF6600;
+    transition: all 0.1s ease-in;
+}
+
+.start-button:active, .retry-button:active {
+    box-shadow: 1px 1px 0px #FF6600;
+    transform: translate(3px, 3px);
 }
 
 .retry-button {
-    background-color: #f44336;
+    border-color: #f44336;
+    box-shadow: 4px 4px 0px #f44336;
+}
+
+.retry-button:active {
+    box-shadow: 1px 1px 0px #f44336;
 }
 
 #qr-reader {
     width: 100% !important;
     border: none !important;
     box-shadow: none !important;
+    background: transparent !important;
 }
 
 #qr-reader video {
     width: 100% !important;
+    max-width: 100vmin !important; /* viewport의 작은 쪽 크기로 제한 */
     height: auto !important;
+    aspect-ratio: 1 !important; /* 1:1 비율 강제 */
     border-radius: 12px;
     overflow: hidden;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* QR 코드 스캔 영역 표시 */
+#qr-reader__scan_region {
+    position: relative !important;
+    width: 100% !important;
+    padding-top: 100% !important; /* 1:1 비율 */
+}
+
+#qr-reader__scan_region > * {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 #qr-reader__scan_region img {

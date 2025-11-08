@@ -31,7 +31,11 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
 
     // QR 스캔 성공 시 실행될 콜백
     function onScanSuccess(decodedText, decodedResult) {
-        console.log(`QR 스캔 성공:`, decodedText);
+        debugLog(`QR 스캔 성공! 디코딩된 텍스트:`, false);
+        debugLog(decodedText, false);
+        debugLog(`디코딩 결과 전체:`, false);
+        debugLog(JSON.stringify(decodedResult, null, 2), false);
+        
         if (html5QrcodeScanner) {
             html5QrcodeScanner.pause();
         }
@@ -40,8 +44,26 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
         avatarImage.src = 'images/avatar-surprised.png';
 
         try {
-            const qrData = JSON.parse(decodedText);
+            let qrData;
+            try {
+                debugLog("JSON 파싱 시도...", false);
+                qrData = JSON.parse(decodedText);
+                debugLog("JSON 파싱 성공:", false);
+                debugLog(JSON.stringify(qrData, null, 2), false);
+            } catch (parseError) {
+                debugLog("JSON 파싱 실패. URL인지 확인...", true);
+                // URL인 경우 처리
+                if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                    debugLog("URL QR 코드 감지됨", true);
+                    throw new Error("URL QR 코드");
+                } else {
+                    debugLog("알 수 없는 형식의 QR 코드", true);
+                    throw parseError;
+                }
+            }
+
             if (qrData.data && qrData.signature) {
+                debugLog("서명 검증 시작...", false);
                 const sig = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
                 sig.init(PUBLIC_KEY);
                 sig.updateString(qrData.data);
@@ -109,18 +131,26 @@ OD/KP8R/pC+smPMg9jjmaSxS6a0JNSbzLe5V6VbvkoNmwozPcOWFZUFAgMBAAE=
             );
 
             // 스캐너 새로 생성
+            const smallerDimension = Math.min(window.innerWidth, window.innerHeight);
+            const qrboxSize = Math.floor(smallerDimension * 0.7); // 화면의 70%
+            
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader",
                 { 
                     fps: 10,
-                    qrbox: { width: 250, height: 250 },
+                    qrbox: { width: qrboxSize, height: qrboxSize },
                     videoConstraints: rearCamera ? {
                         deviceId: rearCamera.deviceId,
-                        facingMode: "environment"
+                        facingMode: "environment",
+                        width: { min: 640, ideal: 1080, max: 1920 },
+                        height: { min: 640, ideal: 1080, max: 1920 },
+                        aspectRatio: 1
                     } : {
-                        facingMode: "environment"
+                        facingMode: "environment",
+                        width: { min: 640, ideal: 1080, max: 1920 },
+                        height: { min: 640, ideal: 1080, max: 1920 },
+                        aspectRatio: 1
                     },
-                    aspectRatio: window.innerWidth / window.innerHeight,
                     showTorchButtonIfSupported: true
                 },
                 false
