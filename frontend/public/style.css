@@ -1,0 +1,462 @@
+/* --- 0. '병맛' 폰트 세팅 --- */
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+
+/* --- 1. 글로벌 스타일 (모든 페이지 공통) --- */
+html {
+    font-size: 16px; /* 1rem = 16px 기준 */
+}
+
+body {
+    /* '대충' 손글씨 폰트 적용! */
+    font-family: 'Gaegu', cursive;
+    font-weight: 700; /* 폰트를 좀 더 굵게 */
+    font-size: 1.1rem; /* 기본 폰트 크기 */
+
+    background-color: #FFFBF5; /* 따뜻한 크림색 배경 */
+    color: #4D3319; /* 진한 고동색 텍스트 */
+    margin: 0;
+    padding: 0;
+    padding-bottom: 5rem; /* 하단 네비게이션바 공간 확보 (rem 단위) */
+    box-sizing: border-box;
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+.container {
+    padding: 1.25rem; /* 20px */
+    max-width: 768px; /* 모바일/태블릿 최대 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+/* --- 2. 상단 헤더 (공통) --- */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9375rem 1.25rem; /* 15px 20px */
+    background-color: #ffffff;
+    
+    border-bottom: 2px solid #FF6600; 
+    font-size: 0.9rem;
+}
+.app-header span:last-child {
+    font-weight: 700;
+    color: #FF6600; 
+}
+
+/* --- 3. 하단 네비게이션 (공통) --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4.375rem; /* 70px */
+    background-color: #ffffff;
+    
+    border-top: 2px solid #FF6600;
+    box-shadow: none; 
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.nav-item {
+    text-decoration: none;
+    color: #AAA; 
+    text-align: center;
+    font-size: 0.8rem;
+    flex: 1; /* 아이템들이 동일한 너비를 갖도록 */
+    padding: 0.5rem 0; /* 터치 영역 확보 */
+}
+.nav-item span {
+    font-size: 1.5rem; 
+    display: block; /* 텍스트와 분리 */
+    margin-bottom: 0.2rem;
+}
+.nav-item p {
+    margin: 0;
+}
+.nav-item.active {
+    color: #FF6600; 
+    font-weight: 700;
+}
+
+
+/* --- 4. '홈' 페이지 전용 스타일 (index.html) --- */
+.home-body {
+    background-color: #FFFBF5; 
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 4.375rem - 4.375rem); /* 헤더 + 네비 제외 */
+}
+.home-main-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem; /* 내부 여백 */
+}
+.avatar-container #avatar-image {
+    width: 9.375rem; /* 150px */
+    height: 9.375rem; /* 150px */
+    
+    border: 3px solid #FF6600;
+    border-radius: 50%; 
+    margin-bottom: 1.25rem; /* 20px */
+    max-width: 50%; /* 더 작은 화면에서 아바타가 너무 커지지 않게 */
+    height: auto; /* 비율 유지 */
+}
+.avatar-container #avatar-message {
+    font-size: 1.5rem; 
+    font-weight: 700;
+    color: #CC5200; 
+    word-break: keep-all; /* 단어 단위로 줄바꿈 */
+}
+
+/* --- 5. '지도' 페이지 전용 스타일 (map.html) --- */
+.map-placeholder { /* 이젠 사용 안함, #map이 이걸 대체 */
+    display: none; 
+}
+
+#map { /* 실제 카카오 지도가 들어갈 div */
+    width: 100%;
+    
+    /* * ✨ 여기가 바로 수정한 부분입니다! (300px -> 450px)
+     * 데스크톱/기본 해상도에서 지도를 더 크게 봅니다.
+     * (모바일은 어차피 미디어 쿼리에서 15rem(240px)으로 덮어씁니다)
+     */
+    height: 28.125rem; /* 450px */
+    
+    border-radius: 10px; 
+    border: 3px solid #FF6600;
+    margin-bottom: 1.25rem;
+}
+
+/* '대충' 마커 (A, B, C) */
+.marker {
+    position: absolute; /* 카카오 커스텀 오버레이는 position:absolute가 필요 */
+    width: 1.875rem; /* 30px */
+    height: 1.875rem; /* 30px */
+    background-color: #FF6600;
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: 2px solid #FFFBF5; 
+}
+
+/* 장소 목록 */
+.spot-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.spot-item {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 2px solid #FF6600;
+    border-radius: 8px;
+    padding: 0.9375rem; /* 15px */
+    margin-bottom: 0.625rem; /* 10px */
+    cursor: pointer; 
+}
+
+/* 목록 앞 마커 (A, B, C) */
+.spot-item .spot-marker {
+    width: 1.5625rem; /* 25px */
+    height: 1.5625rem; /* 25px */
+    background-color: #FF6600;
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-right: 0.9375rem; /* 15px */
+    flex-shrink: 0; 
+}
+
+.spot-item p {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #4D3319;
+}
+
+
+/* --- 6. '보안 튜토리얼' 페이지 전용 스타일 (secure.html) --- */
+.security-main-content {
+    background-color: #FFFBF5;
+    padding: 1.25rem;
+    max-width: 768px; /* 모바일/태블릿 최대 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+.avatar-container #avatar-image.avatar-panic {
+    width: 9.375rem; /* 150px */
+    height: 9.375rem; /* 150px */
+    border: 3px solid #FF6600;
+    border-radius: 50%;
+    margin: 0 auto 1.25rem; /* 중앙 정렬 및 아래 여백 */
+    display: block; /* 중앙 정렬 위해 */
+    animation: shake 0.5s infinite; /* 애니메이션은 유지 */
+    max-width: 50%; /* 더 작은 화면에서 아바타가 너무 커지지 않게 */
+    height: auto;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    50% { transform: translate(-1px, -1px) rotate(0deg); }
+    100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+
+.tutorial-message {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #CC5200;
+    text-align: center;
+    margin-bottom: 1.5rem; /* 24px */
+}
+
+.tutorial-card {
+    background-color: #ffe0b2; /* 연한 오렌지색 */
+    border: 2px solid #FF6600;
+    border-radius: 0.625rem; /* 10px */
+    padding: 1.25rem; /* 20px */
+    margin-bottom: 1rem; /* 16px */
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.tutorial-card strong {
+    color: #D32F2F; /* 위험 강조는 붉은색 */
+    font-weight: 700;
+}
+
+.tutorial-card.solution {
+    background-color: #d4edda; /* 연한 초록색 */
+    border: 2px solid #28a745; /* 진한 초록색 */
+}
+.tutorial-card.solution strong {
+    color: #28a745; 
+}
+.tutorial-card.solution p:last-child {
+    font-size: 0.8rem;
+    color: #555;
+    background-color: #f0f0f0;
+    padding: 0.3125rem; /* 5px */
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+#app-install-final {
+    text-align: center;
+    margin-top: 1.875rem; /* 30px */
+}
+.btn-real-install {
+    background-color: #28a745; /* 설치 버튼은 초록색 */
+    color: white;
+    border: none;
+    padding: 0.9375rem 1.5625rem; /* 15px 25px */
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px; /* 버튼 너무 커지지 않게 */
+    box-sizing: border-box;
+}
+.back-link {
+    display: block;
+    margin-top: 0.9375rem; /* 15px */
+    font-size: 0.9rem;
+    color: #777;
+    text-decoration: none;
+}
+
+/* ============================
+  모바일 화면 최적화 미디어 쿼리
+============================ */
+@media (max-width: 600px) {
+    html {
+        font-size: 14px; /* 더 작은 화면에서 기본 폰트 크기 줄이기 */
+    }
+
+    .app-header {
+        padding: 0.75rem 1rem; /* 12px 16px */
+    }
+
+    .bottom-nav {
+        height: 4rem; /* 64px */
+    }
+    .nav-item span {
+        font-size: 1.3rem;
+    }
+    .nav-item p {
+        font-size: 0.75rem;
+    }
+
+    .container {
+        padding: 1rem; /* 16px */
+    }
+
+    .avatar-container #avatar-image {
+        width: 8rem; /* 128px */
+        height: 8rem;
+        margin-bottom: 1rem;
+    }
+    .avatar-container #avatar-message {
+        font-size: 1.3rem;
+    }
+
+    #map {
+        height: 15rem; /* 240px */
+    }
+
+    .spot-item {
+        padding: 0.75rem;
+    }
+    .spot-item .spot-marker {
+        width: 1.3rem;
+        height: 1.3rem;
+        font-size: 0.9rem;
+        margin-right: 1rem;
+    }
+    .spot-item p {
+        font-size: 1rem;
+    }
+
+    .tutorial-card {
+        padding: 1rem;
+    }
+    .btn-real-install {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    html {
+        font-size: 13px; /* 아주 작은 화면에서 폰트 더 줄이기 */
+    }
+
+    .avatar-container #avatar-image {
+        width: 7rem; /* 112px */
+        height: 7rem;
+    }
+    .avatar-container #avatar-message {
+        font-size: 1.2rem;
+    }
+}
+
+/* ... (기존 '지도' 페이지 스타일은 그대로 둠) ... */
+
+
+/* --- 6. '키워드' 페이지 전용 스타일 (keyword.html) --- */
+
+.keyword-title {
+    font-size: 1.5rem;
+    color: #CC5200;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #FF6600;
+}
+
+.keyword-grid {
+    display: grid;
+    /* 2열 그리드, 1:1 비율 */
+    grid-template-columns: 1fr 1fr; 
+    gap: 0.75rem; /* 12px */
+    margin-bottom: 2rem; /* 32px */
+}
+
+.keyword-btn {
+    font-family: 'Gaegu', cursive; /* 폰트 적용 */
+    font-weight: 700;
+    font-size: 1.1rem;
+    
+    background-color: #ffffff;
+    border: 2px solid #FF6600;
+    border-radius: 8px;
+    padding: 1.25rem 0.5rem; /* 20px 8px */
+    
+    color: #4D3319;
+    cursor: pointer;
+    
+    /* 그림자 효과로 입체감 (병맛스럽게) */
+    box-shadow: 4px 4px 0px #FF6600;
+    transition: all 0.1s ease-in;
+}
+
+/* 버튼 클릭 시 '눌리는' 효과 */
+.keyword-btn:active {
+    box-shadow: 1px 1px 0px #FF6600;
+    transform: translate(3px, 3px);
+}
+
+.result-title {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* ... (기존 '키워드' 페이지 스타일은 그대로 둠) ... */
+
+/* ... (기존 '키워드' 페이지 스타일은 그대로 둠) ... */
+
+
+/* --- 7. 'QR 스캐너' 페이지 전용 스타일 (scanner.html) --- */
+
+.scanner-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 4.375rem); /* 네비 높이만 뺌 (헤더 포함) */
+}
+.scanner-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    background-color: #333; /* 카메라 배경은 '대충' 어둡게 */
+}
+
+.scanner-avatar {
+    margin-bottom: 2rem;
+}
+.scanner-avatar #avatar-image {
+    width: 6rem; /* 96px */
+    height: 6rem;
+    border: 3px solid #FF6600;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+.scanner-avatar #avatar-message {
+    font-size: 1.3rem;
+    color: #FFFFFF; /* 어두운 배경이라 흰색으로 */
+}
+
+/* ✨ '진짜' 스캐너가 들어갈 컨테이너 */
+#qr-reader-container {
+    width: 100%;
+    max-width: 400px; /* 너무 커지지 않게 */
+    padding: 1rem;
+}
+
+/* ✨ html5-qrcode 라이브러리가 사용할 div */
+#qr-reader {
+    border: 4px dashed #FF6600;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* (라이브러리 스타일 덮어쓰기 - 선택사항) */
+#qr-reader select {
+    font-family: 'Gaegu', cursive; /* 폰트 '병맛'으로 */
+}
