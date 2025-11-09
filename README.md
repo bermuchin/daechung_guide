@@ -69,27 +69,8 @@ Deployment: Vercel (https:// 자동 발급)
 
 Local Server: Python http.server (테스트용)
 
-5. 🚀 실행 방법
-카카오 API 키 발급
 
-카카오 개발자사이트에서 앱 생성
-
-플랫폼 ▷ Web 플랫폼 등록 ▷ http://localhost:8080 (또는 Vercel 주소) 등록
-
-**'JavaScript 키'**를 복사하여 map.html의 appkey= 부분에 붙여넣기
-
-로컬 서버로 실행
-
-Bash
-
-# /frontend/public 폴더로 이동
-cd daechung-guide/frontend/public
-
-# 8080 포트로 '대충' 서버 실행
-python -m http.server 8080
-
-# 브라우저에서 http://localhost:8080 접속
-Vercel 배포 (권장)
+# Vercel 배포 
 
 본인의 Vercel 계정에 이 깃허브 저장소를 연결합니다.
 
